@@ -4,6 +4,7 @@ import pygame
 import tkinter as tk
 from tkinter import messagebox
 
+
 class Cube(object):
   rows = 20
   w = 500
@@ -17,7 +18,7 @@ class Cube(object):
   def move (self, dirnx, dirny):
     self.dirnx = dirnx
     self.dirny = dirny
-    self.pos(self.pos[0] + self.dirnx, self.pos[1] + self.dirny)
+    self.pos = (self.pos[0] + self.dirnx, self.pos[1] + self.dirny)
 
   def draw (self, surface, eyes = False):
     dis = self.w // self.rows
@@ -84,19 +85,32 @@ class Snake(object):
         if i == len(self.body) - 1:
           self.turns.pop(p)
 
-        else:
-          if c.dirnx == -1 and c.pos[0] <= 0: c.pos = (c.rows-1, c.pos[1])
-          elif c.dirnx == 1 and c.pos[0] >= c.rows-1: c.pos = (0,c.pos[1])
-          elif c.dirny == 1 and c.pos[1] >= c.rows-1: c.pos = (c.pos[0], 0)
-          elif c.dirny == -1 and c.pos[1] <= 0: c.pos = (c.pos[0],c.rows-1)
-          else: c.move(c.dirnx,c.dirny)
+      else:
+        if c.dirnx == -1 and c.pos[0] <= 0: c.pos = (c.rows-1, c.pos[1])
+        elif c.dirnx == 1 and c.pos[0] >= c.rows-1: c.pos = (0,c.pos[1])
+        elif c.dirny == 1 and c.pos[1] >= c.rows-1: c.pos = (c.pos[0], 0)
+        elif c.dirny == -1 and c.pos[1] <= 0: c.pos = (c.pos[0],c.rows-1)
+        else: c.move(c.dirnx,c.dirny)
 
 
   def reset (self, pos):
     pass
 
   def add_cube (self):
-    pass
+    tail = self.body[-1]
+    dx, dy = tail.dirnx, tail.dirny
+
+    if dx == 1 and dy == 0:
+        self.body.append(cube((tail.pos[0]-1,tail.pos[1])))
+    elif dx == -1 and dy == 0:
+        self.body.append(cube((tail.pos[0]+1,tail.pos[1])))
+    elif dx == 0 and dy == 1:
+        self.body.append(cube((tail.pos[0],tail.pos[1]-1)))
+    elif dx == 0 and dy == -1:
+         self.body.append(cube((tail.pos[0],tail.pos[1]+1)))
+
+    self.body[-1].dirnx = dx
+    self.body[-1].dirny = dy
 
   def draw (self, surface):
     for i, c in enumerate(self.body):
@@ -126,8 +140,19 @@ def redraw_window (surface):
   draw_grid(width, rows, surface)
   pygame.display.update()
 
-def random_snack (rows, items):
-  pass
+def random_snack (rows, item):
+  positions = item.body
+
+  while True:
+    x = random.randrange(rows)
+    y = random.randrange(rows)
+
+    if len(list(filter(lambda z: z.pos == (x,y), positions))) > 0:
+      continue
+    else:
+      break
+
+    return (x,y)
 
 def massage_box (subject, content):
   pass
@@ -138,6 +163,7 @@ def main ():
   rows = 20
   win = pygame.display.set_mode((width, width))
   s = Snake((255, 255, 255), (10,10))
+  snack = Cube(random_snack(rows, s), color = (0,255,0))
 
   clock = pygame.time.Clock()
 
@@ -145,7 +171,13 @@ def main ():
   while flag:
     pygame.time.delay(50)
     clock.tick(10)
+    s.move()
+
+    if s.body[0].pos == snack.pos:
+      s.add_cube()
+      snack = Cube(random_snack(rows, s), color = (0, 255, 0))
     redraw_window(win)
+
 
 
 main()
