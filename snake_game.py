@@ -35,8 +35,6 @@ class Cube(object):
       pygame.draw.circle(surface, (0, 0, 0), circle_middle, radius)
       pygame.draw.circle(surface, (0, 0, 0), circle_middle_2, radius)
 
-
-
 class Snake(object):
   body = []
   turns = {}
@@ -101,13 +99,13 @@ class Snake(object):
     dx, dy = tail.dirnx, tail.dirny
 
     if dx == 1 and dy == 0:
-        self.body.append(cube((tail.pos[0]-1,tail.pos[1])))
+        self.body.append(Cube((tail.pos[0]-1,tail.pos[1])))
     elif dx == -1 and dy == 0:
-        self.body.append(cube((tail.pos[0]+1,tail.pos[1])))
+        self.body.append(Cube((tail.pos[0]+1,tail.pos[1])))
     elif dx == 0 and dy == 1:
-        self.body.append(cube((tail.pos[0],tail.pos[1]-1)))
+        self.body.append(Cube((tail.pos[0],tail.pos[1]-1)))
     elif dx == 0 and dy == -1:
-         self.body.append(cube((tail.pos[0],tail.pos[1]+1)))
+         self.body.append(Cube((tail.pos[0],tail.pos[1]+1)))
 
     self.body[-1].dirnx = dx
     self.body[-1].dirny = dy
@@ -134,23 +132,25 @@ def draw_grid (w, rows, surface):
 
 
 def redraw_window (surface):
-  global width, rows, s
+  global width, rows, s, snack
   surface.fill((28, 58, 96))
   s.draw(surface)
+  snack.draw(surface)
   draw_grid(width, rows, surface)
   pygame.display.update()
 
-def random_snack (rows, item):
-  positions = item.body
+def random_snack(rows, item):
 
-  while True:
-    x = random.randrange(rows)
-    y = random.randrange(rows)
+    positions = item.body
 
-    if len(list(filter(lambda z: z.pos == (x,y), positions))) > 0:
-      continue
-    else:
-      break
+    while True:
+        x = random.randrange(rows)
+        y = random.randrange(rows)
+
+        if len(list(filter(lambda z:z.pos == (x,y), positions))) > 0:
+            continue
+        else:
+            break
 
     return (x,y)
 
@@ -158,12 +158,13 @@ def massage_box (subject, content):
   pass
 
 def main ():
-  global width, rows, s
+  global width, rows, s, snack
   width = 500
   rows = 20
   win = pygame.display.set_mode((width, width))
   s = Snake((255, 255, 255), (10,10))
   snack = Cube(random_snack(rows, s), color = (0,255,0))
+
 
   clock = pygame.time.Clock()
 
