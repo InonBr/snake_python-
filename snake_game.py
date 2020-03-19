@@ -163,9 +163,7 @@ def main ():
   rows = 20
   win = pygame.display.set_mode((width, width))
   s = Snake((255, 255, 255), (10,10))
-  snack = Cube(random_snack(rows, s), color = (0,255,0))
-
-
+  snack = Cube(random_snack(rows, s), color = (255, 216, 104))
   clock = pygame.time.Clock()
 
   flag = True
@@ -176,7 +174,7 @@ def main ():
 
     if s.body[0].pos == snack.pos:
       s.add_cube()
-      snack = Cube(random_snack(rows, s), color = (0, 255, 0))
+      snack = Cube(random_snack(rows, s), color = (255, 216, 104))
     redraw_window(win)
 
 
